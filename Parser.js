@@ -66,7 +66,7 @@ const Parser = nodeDefinitions => {
             const nextDriver = next && nodeDefinitions.find (d => d.test(next, nodes));
             
             console.log (parent?.id, nextDriver?.id, parent?.rbp, nextDriver?.lbp)
-            if (parent && next && parent.rbp < nextDriver.lbp) break;
+            if (cur.rbp < nextDriver.rbp) break;
         } while (tokens.length);
 
         return nodes;
