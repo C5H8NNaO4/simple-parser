@@ -54,7 +54,9 @@ const parse = (src) => {
     return ast;
 }
 
-const ast = parse(`rsi(9) > 70 AND rsi(8) > 70`);
+const src = `rsi(9) > 70 AND rsi(8) > 70`;
+
+const ast = parse(src);
 
 const compFns = {
     '<': (a,b) => a<b,
@@ -83,3 +85,5 @@ const FnBh = new Behaviour(hasId('FunctionCall'), (node, _eval) => {
 
 const behaviours = [IdBh, NrBh, AndBh, OrBh, ExprBh, CompBh, FnBh, ArgsBh];
 const res = Behaviour.eval(ast[0], behaviours);
+
+console.log (`${src} => ${res}`)
