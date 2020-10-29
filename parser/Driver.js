@@ -25,13 +25,14 @@ class Driver {
         return this;
     }
 
-    unfold (token) {
-        this._unfold = token;
+    unfold () {
+        this._unfold = true;
         return this;
     }
 
-    until (token) {
+    until (token, lookAhead = 0) {
         this._until = token;
+        this._lookAhead = lookAhead;
         return this;
     }
 

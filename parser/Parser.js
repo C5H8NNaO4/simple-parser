@@ -4,8 +4,8 @@ const Parser = nodeDefinitions => {
         if (tokens.length === 0)return [];
 
         const [parent, ...rest] = parents;
-
         let i=0;
+
         do {
             const token = tokens.shift();
 
@@ -16,7 +16,16 @@ const Parser = nodeDefinitions => {
                 throw new Error(`Unexpected token ${JSON.stringify(token)}`);
             }
 
-            if (parent && parent._until && parent._until(token, parents, nodes)) {
+            let next = tokens[0]
+            const nextDriver = next && nodeDefinitions.find (d => d.test(next, nodes));
+            
+            if (parent && nextDriver && parent.rbp < nextDriver.lbp) {
+                tokens.unshift(token);
+                break;
+            }
+            
+            next = parent && (parent._lookAhead==0?token:tokens[parent._lookAhead - 1]);
+            if (parent && parent._until && next && parent._until(next, parents, nodes)) {
                 tokens.unshift(token);
                 break;
             }       
@@ -25,7 +34,6 @@ const Parser = nodeDefinitions => {
                 const lhs = nodes.pop();
                 if (!cur.test(token, [lhs]))
                     throw new Error(`Expected token ${cur._consumeLeft._match} but found ${lhs.token.type} instead. ${cur.name}`)
-                node.lhs = lhs;
                 node.children.push(lhs);
             }
 
@@ -34,9 +42,8 @@ const Parser = nodeDefinitions => {
                 do {
                     parse(tokens, [cur, ...parents]);
                     const rhs = nodes.shift();
-                    node.rhs = rhs;
                     node.children.push(rhs);
-                    if (tokens[0] && cur.test(tokens[0], [node.lhs])) {
+                    if (tokens[0] && cur.test(tokens[0], [node.children[0]])) {
                         tokens.shift();
                         repeat = true;
                     } else {
@@ -48,11 +55,11 @@ const Parser = nodeDefinitions => {
             node.token = token;
 
             if (cur._unfold) {
-                const rhs = node.rhs;
+                const rhs = node.children.slice(-1)[0];
                 const un = rhs.children;
-                if (node.token.value === rhs.token.value)
-                    node.children = [node.lhs, ...un]
-
+                if (node.token.value === rhs.token.value) {
+                    node.children = [node.children[0], ...un];
+                }
             } 
 
             if (cur._end && cur._end(tokens[0] || {}, cur, nodes)) {
@@ -60,13 +67,8 @@ const Parser = nodeDefinitions => {
             }
 
             nodes.push(cur.transform(node));
-            if (parent && ++i === parent.n) break;
 
-            const next = tokens[0]
-            const nextDriver = next && nodeDefinitions.find (d => d.test(next, nodes));
-            
-            console.log (parent?.id, nextDriver?.id, parent?.rbp, nextDriver?.lbp)
-            if (cur.rbp < nextDriver.rbp) break;
+            if (parent && ++i === parent.n) break;
         } while (tokens.length);
 
         return nodes;

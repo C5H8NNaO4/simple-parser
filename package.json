@@ -1,0 +1,30 @@
+{
+  "name": "simple-parser",
+  "version": "0.0.1",
+  "description": "A simple parser generator",
+  "main": "index.js",
+  "dependencies": {
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/C5H8NNaO4/simple-parser.git"
+  },
+  "keywords": [
+    "lexer",
+    "tokenizer",
+    "parser",
+    "interpreter"
+  ],
+  "author": "Moritz Roessler",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/C5H8NNaO4/simple-parser/issues"
+  },
+  "homepage": "https://github.com/C5H8NNaO4/simple-parser#readme"
+}
