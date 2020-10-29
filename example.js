@@ -16,7 +16,7 @@ const tokenDefinitions = [
 const keywords = ['AND', 'OR'];
 const type = type => token => token.type === type;
 const value = value => token => token.value === value;
-const parent =  (token, parents, nodes) => console.log (parents[1]) || parents[1] &&  parents[1]._until(token, parents.slice(1), nodes) ;
+const parent =  (token, parents, nodes) => parents[1] &&  parents[1]._until(token, parents.slice(1), nodes) ;
 const or = (...fns) => (token, parents, nodes) => fns.reduce((a, fn) => a || fn(token, parents, nodes), false);
 const parentOr = fn => or(parent, fn);
 const keyword = token => type('Identifier')(token) && keywords.some(k => value(k)(token));
@@ -65,7 +65,7 @@ const Fns = {
     sma: (n) => n * 10
 };
 
-const hasId = id => token => console.log (token) || token.id === id;
+const hasId = id => token => token.id === id;
 const tokenValue = node => node.token.value;
 
 const IdBh = new Behaviour(hasId('Identifier'), tokenValue)
@@ -80,8 +80,6 @@ const FnBh = new Behaviour(hasId('FunctionCall'), (node, _eval) => {
     if (!Fns[a]) throw new Error('Unknow Function ' + a)
     return Fns[a](b);
 });
-console.log (ast)
-// process.exit(0);
+
 const behaviours = [IdBh, NrBh, AndBh, OrBh, ExprBh, CompBh, FnBh, ArgsBh];
 const res = Behaviour.eval(ast[0], behaviours);
-console.log ("Res", res)
