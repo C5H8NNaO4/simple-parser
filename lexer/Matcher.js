@@ -34,7 +34,7 @@ class Matcher {
     test (char, token = '', hint, src)  {
         if (hint === null) return false;
         if (hint) return this._test(hint, char)
-        if (this._has && !token) return this._test(this._has, src);
+        if (this._has && !token) return this._test(this._has, char + src);
         if (this._start && !token) return this._test(this._start, char);
         if (this._next)  return this._test(this._next, char);
         if (this._while) return this._test(this._while, token + char);
