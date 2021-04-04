@@ -3,7 +3,7 @@ class Behaviour {
         const node = ast;
         const beh  = behaviours.find(b => b.testFn(ast)); 
         if (!beh)
-            throw new Error(`No behaviour found for node ${JSON.stringify(node)}`)
+            throw new Error(`No behaviour found for node ${JSON.stringify(node)} AST: ${ast}`)
         return beh.evalFn(node, (node, _behaviours = behaviours) => {
             const val = Behaviour.eval(node, _behaviours)
             return val;

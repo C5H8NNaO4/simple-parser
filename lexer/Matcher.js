@@ -11,6 +11,8 @@ class Matcher {
     }
 
     /** Consumes a character once at the beginning.*/
+    has (regExp) {return setInstanceProp(this, '_has', regExp)}
+    /** Consumes a character once at the beginning.*/
     start (regExp) {return setInstanceProp(this, '_start', regExp)}
     /** Consumes a character each step*/
     next (regExp) {return setInstanceProp(this, '_next', regExp)}
@@ -29,9 +31,10 @@ class Matcher {
     }
 
     /** Tests a character and token against the defined regexes/functions. Can be given a hint to test a specific regex/fn */
-    test (char, token = '', hint)  {
+    test (char, token = '', hint, src)  {
         if (hint === null) return false;
         if (hint) return this._test(hint, char)
+        if (this._has && !token) return this._test(this._has, src);
         if (this._start && !token) return this._test(this._start, char);
         if (this._next)  return this._test(this._next, char);
         if (this._while) return this._test(this._while, token + char);
@@ -51,11 +54,18 @@ class Matcher {
 }
 
 /** Creates a matcher that transforms the matched token into an object with a prototype that shares common information*/
-const TokenFactory = (proto, assign) => new Matcher((value) => {
+/**
+ * 
+ * @param {*} proto - A prototype/template object used to create the token.
+ * @param {*} assign - A flag to toggle between Object.assign and Object.create. 
+ * @param {*} transform - A transform callback that transforms the tokens value. 
+ * @returns 
+ */
+const TokenFactory = (proto, assign, transform = v => v) => new Matcher((value) => {
     if (typeof value === 'object') return value
     if (assign)
-        return Object.assign({}, proto, {value})
-    return Object.assign(Object.create(proto), {value})
+        return Object.assign({}, proto, {value : transform(value)})
+    return Object.assign(Object.create(proto), {value : transform(value)})
 });
 
 module.exports = {Matcher, TokenFactory};

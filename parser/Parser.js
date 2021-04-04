@@ -2,7 +2,7 @@ const Parser = nodeDefinitions => {
     const nodes = [];
     return function parse (tokens, parents = []) {
         if (tokens.length === 0)return [];
-
+        console.log ("TOKENS", tokens)
         const [parent, ...rest] = parents;
         let i=0;
 
@@ -37,12 +37,19 @@ const Parser = nodeDefinitions => {
                 node.children.push(lhs);
             }
 
-            if (cur._consumeRight) {
+            if (cur._consumeRight ) {
                 let repeat = false;
                 do {
                     parse(tokens, [cur, ...parents]);
                     const rhs = nodes.shift();
-                    node.children.push(rhs);
+
+                    if (cur._consumeRight(rhs)) {
+                        node.children.push(rhs);
+                    } else if (rhs) {
+                         tokens.unshift(rhs);
+
+                    }
+
                     if (tokens[0] && cur.test(tokens[0], [node.children[0]])) {
                         tokens.shift();
                         repeat = true;

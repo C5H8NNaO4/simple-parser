@@ -4,9 +4,9 @@ const Lexer = (def) =>  (src) => {
     return src.split('').reduce((acc, char, i, arr) => {
         let [token, lastMatcher, tokens] = acc;
         const {_end = null} = lastMatcher; let ret; 
-        if (lastMatcher.test(char, token, _end)) {
+        if (lastMatcher.test(char, token, _end, arr.slice(i).join(''))) {
             ret = [lastMatcher.transform(token+char), new Matcher, tokens];
-        } else if (lastMatcher.test(char, token)) {
+        } else if (lastMatcher.test(char, token, undefined, arr.slice(i).join(''))) {
             ret = [token+char, lastMatcher,tokens];
         } else {
             const matcher = def.find(matcher => matcher.test(char));

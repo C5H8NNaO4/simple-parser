@@ -14,7 +14,7 @@ class Driver {
         return this;
     }
 
-    consumeRight (token = true, n = Infinity) {
+    consumeRight (token = () => true, n = Infinity) {
         this._consumeRight = token;
         this.n = n;
         return this;
