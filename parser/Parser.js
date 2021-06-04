@@ -2,7 +2,7 @@ const Parser = nodeDefinitions => {
     const nodes = [];
     return function parse (tokens, parents = []) {
         if (tokens.length === 0)return [];
-        console.log ("TOKENS", tokens)
+        
         const [parent, ...rest] = parents;
         let i=0;
 
@@ -34,7 +34,8 @@ const Parser = nodeDefinitions => {
                 const lhs = nodes.pop();
                 if (!cur.test(token, [lhs]))
                     throw new Error(`Expected token ${cur._consumeLeft._match} but found ${lhs.token.type} instead. ${cur.name}`)
-                node.children.push(lhs);
+                if (lhs)
+                    node.children.push(lhs);
             }
 
             if (cur._consumeRight ) {

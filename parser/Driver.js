@@ -9,8 +9,9 @@ class Driver {
         this._match = token;
         return this;
     }
-    consumeLeft (token) {
+    consumeLeft (token, mandatory = true) {
         this._consumeLeft = token;
+        this._mandatory = mandatory;
         return this;
     }
 
@@ -42,6 +43,7 @@ class Driver {
     }
 
     test (token, nodes = []) {
+        const {_mandatory} = this;
         let ret;
         if (typeof this._match === 'function')
             ret = this._match(token);
@@ -51,7 +53,11 @@ class Driver {
 
         if (this._consumeLeft) {
             const lhs = nodes.slice().pop();
-            ret = ret && lhs && (lhs.id === this._consumeLeft.id || this._consumeLeft.test(lhs.token));
+            if (!_mandatory && !lhs) {
+                ret = true;
+            } else {
+                ret = ret && lhs && (lhs.id === this._consumeLeft.id || this._consumeLeft.test(lhs.token));
+            }
         }
 
         return ret;
@@ -59,7 +65,7 @@ class Driver {
 
     transform (node) {
         if (typeof this._transform === 'function')
-            return {...this._transform(node), id: this.id};
+            return {id: this.id, ...this._transform(node)};
         return {...node, id: this.id};
     }
     
